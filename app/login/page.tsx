@@ -26,7 +26,6 @@ function LoginForm() {
     }
     toast.success('Welcome back!');
     router.push(next);
-    router.refresh();
   };
 
   return (
