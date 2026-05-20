@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { Toaster } from 'react-hot-toast';
-import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
-import { getCurrentUserProfile } from '@/lib/supabase.server';
+import NavShell from '@/components/NavShell';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,11 +11,7 @@ export const metadata: Metadata = {
   description: 'Route-based wholesale distribution management for Pakistani retail supply chains.',
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUserProfile();
-  const userInitial = (user?.name ?? 'U').charAt(0).toUpperCase();
-  const showNav = !!user;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="light">
       <head>
@@ -28,19 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="antialiased" style={{ backgroundColor: '#f7f9fb', color: '#191c1e' }}>
         <CartProvider>
-          {showNav && (
-            <Sidebar
-              userName={user.name}
-              userShop={user.shop_name ?? undefined}
-              userRole={user.role}
-            />
-          )}
-          {showNav && (
-            <TopBar userInitial={userInitial} userName={user.name} />
-          )}
-          <main className={showNav ? 'md:ml-[280px] pt-[64px] min-h-screen' : 'min-h-screen'}>
-            {children}
-          </main>
+          <NavShell>{children}</NavShell>
           <Toaster
             position="top-right"
             toastOptions={{
