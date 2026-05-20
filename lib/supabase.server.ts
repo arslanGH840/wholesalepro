@@ -19,8 +19,9 @@ export async function getSupabaseSSRClient() {
 export async function getCurrentUserProfile() {
   try {
     const sb = await getSupabaseSSRClient();
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) return null;
+    // Use getUser() instead of getSession() — validates token with Supabase server
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error || !user) return null;
 
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const adminSb = createClient(supabaseUrl, serviceKey ?? supabaseAnonKey, {
@@ -30,7 +31,7 @@ export async function getCurrentUserProfile() {
     const { data } = await adminSb
       .from('users')
       .select('*')
-      .eq('auth_id', session.user.id)
+      .eq('auth_id', user.id)
       .single();
 
     return data ?? null;

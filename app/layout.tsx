@@ -7,6 +7,7 @@ import TopBar from '@/components/TopBar';
 import { getCurrentUserProfile } from '@/lib/supabase.server';
 
 export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'WholesalePro — B2B Distribution Hub',
   description: 'Route-based wholesale distribution management for Pakistani retail supply chains.',

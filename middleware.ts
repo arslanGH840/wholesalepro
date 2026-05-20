@@ -11,7 +11,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const response = NextResponse.next();
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
 
   const sb = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,17 +22,19 @@ export async function middleware(request: NextRequest) {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet: { name: string; value: string; options?: object }[]) => {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request: { headers: request.headers } });
           cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2]);
           });
         },
       },
     }
   );
 
-  const { data: { session } } = await sb.auth.getSession();
+  const { data: { user } } = await sb.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
