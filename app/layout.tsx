@@ -4,7 +4,7 @@ import { CartProvider } from '@/context/CartContext';
 import { Toaster } from 'react-hot-toast';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
-import { getCurrentUserProfile } from '@/lib/supabase';
+import { getCurrentUserProfile } from '@/lib/supabase.server';
 
 export const metadata: Metadata = {
   title: 'WholesalePro — B2B Distribution Hub',
