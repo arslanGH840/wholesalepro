@@ -4,13 +4,18 @@ import { CartProvider } from '@/context/CartContext';
 import { Toaster } from 'react-hot-toast';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
+import { getCurrentUserProfile } from '@/lib/supabase';
 
 export const metadata: Metadata = {
   title: 'WholesalePro — B2B Distribution Hub',
   description: 'Route-based wholesale distribution management for Pakistani retail supply chains.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUserProfile();
+  const userInitial = (user?.name ?? 'U').charAt(0).toUpperCase();
+  const showNav = !!user;
+
   return (
     <html lang="en" className="light">
       <head>
@@ -21,9 +26,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased" style={{ backgroundColor: '#f7f9fb', color: '#191c1e' }}>
         <CartProvider>
-          <Sidebar />
-          <TopBar />
-          <main className="md:ml-[280px] pt-[64px] min-h-screen">
+          {showNav && (
+            <Sidebar
+              userName={user.name}
+              userShop={user.shop_name ?? undefined}
+              userRole={user.role}
+            />
+          )}
+          {showNav && (
+            <TopBar userInitial={userInitial} userName={user.name} />
+          )}
+          <main className={showNav ? 'md:ml-[280px] pt-[64px] min-h-screen' : 'min-h-screen'}>
             {children}
           </main>
           <Toaster
